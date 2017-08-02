@@ -1,0 +1,1880 @@
+#include<glut.h>
+#include<stdio.h>
+#include<math.h>
+#include<string.h>
+const float deg2rad=3.14157/180;
+int frame=1,seaFrame=1,j;
+int n;
+int bg_count=0;
+float k;
+long ck,cl,i,l;
+int cloud_x=300,cloud_y=600,cloud_x1=600,cloud_y1=600,cloud_xd3=600,cloud_yd3=600,cloud_x1d3=840,cloud_y1d3=600;
+int drop_x=800,drop_y=160,drop_x1=300.0,drop_y1=160.0,sun_x=120,sun_y=450,bird1_x=900,bird1_y=520,bird2_x=700,bird2_y=530,bird3_x=600,bird3_y=540;
+int rx1=50,ry1=50,rx2=100,ry2=300;
+//float bg_colors[5][3]={{0.827451 ,0.827451 ,0.827451},{0.960784 ,1, 0.980392},{0.839216, 0.839216 ,0.839216},
+//{0.666667,0.666667, 0.666667},{0.517647 ,0.517647 ,0.517647}};
+float bg_x=0.827451 ,bg_y=0.827451 ,bg_z=0.827451;
+int sun_x1=130,sun_y1=600,cloud_xt=900,cloud_yt=650;
+int after_vapour=0,cframe=0;
+	
+
+void DrawTextXY(double x,double y,double z,double scale,char *s)
+{
+	
+int   i,l=strlen(s);
+   glPushMatrix();
+   glTranslatef(x,y,z);
+   glScalef(scale,scale,scale);
+   for (i=0;i <l;i++)
+      glutStrokeCharacter(GLUT_STROKE_ROMAN,s[i]);
+   glPopMatrix();
+}
+
+
+void drawText1(float x,float y,float r,float g,float b,char *s)
+{
+	int j=strlen(s);
+	glColor3f(r,g,b);
+	glRasterPos2f(x,y);
+	for(i=0;i<j;i++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,s[i]);
+	}
+
+}
+
+void drawText(float x,float y,float r,float g,float b,char *s)
+{
+	glPushMatrix();
+	int j=strlen(s);
+	glColor3f(r,g,b);
+	 glTranslatef(x,y,0.2);
+	glScalef(0.1,0.1,0.1);
+	for(i=0;i<j;i++)
+	{
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,s[i]);
+	}
+	glPopMatrix();
+
+}
+
+void sea(){
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(0.0,350.0);
+	glVertex2f(300.0,350.0);
+	
+	float r1=460.0;
+	for(i=250;i<=360;i++)
+	{
+
+		float deginrad=i*deg2rad;
+		glVertex2f(cos(deginrad)*r1+0.0,sin(deginrad)*r1+350.0);
+	}
+
+	glEnd();
+	if(seaFrame==1)
+	{
+	//		for(cl=0;cl<99999;cl++)
+	//for(ck=0;ck<5000;ck++);
+	
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(440.0,350.0);
+	glVertex2f(380.0,107.0);
+	glVertex2f(450.0,107.0);
+	glVertex2f(470.0,350.0);
+	glVertex2f(440.0,350.0);
+	glEnd();
+
+
+	//for(cl=0;cl<99999;cl++)
+	//for(ck=0;ck<5000;ck++);
+	
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	glVertex2f(470.0,350.0);
+	glVertex2f(450.0,107.0);
+	glVertex2f(460.0,107.0);
+	glVertex2f(480.0,350.0);
+	glVertex2f(470.0,350.0);
+	glEnd();
+	
+
+	}
+
+}
+
+void circle(GLfloat x, GLfloat y, GLdouble radius)
+{
+	float x2, y2;
+	float angle;
+	glPointSize(2.0);
+	
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(x,y);
+	for (angle = 1.0; angle < 361.0f; angle += 0.2)
+	{
+		x2 = x + sin(angle)*radius;
+		y2 = y + cos(angle)*radius;
+		glVertex2f(x2, y2);
+	}
+	glEnd();
+}
+
+void cloud(int x,int y,int r, int i)
+{	if(frame==5)
+			glColor3f(0.745098,0.745098,0.745098);
+	else if(cframe==6)
+				glColor3f(0.745098,0.745098,0.745098);
+	else
+			glColor3f( 0.901961,0.901961,0.980392);
+
+	circle(x+i,y,r);
+	circle(x+i,y,r);
+	circle(x+10+i,y+30,r-10);
+	circle(x+55+i,y+20,r+10);
+	circle(x+100+i,y+25,r-5);
+	circle(x+90+i,y,r+10);
+	circle(x+120+i,y+15,r-10);
+
+
+}
+
+void treetop(int x,int y,int width,int height)
+{	
+	glColor3f(0,0.392157,0);
+	glBegin(GL_TRIANGLES);
+	glVertex2i(x-45,y+40);
+	glVertex2i(x+width+45,y+40);
+	glVertex2f(x+(width/2),y+(height-10));
+	glVertex2i(x-40,y+60);
+	glVertex2i(x+width+40,y+60);
+	glVertex2f(x+(width/2),y+height+30);
+	glVertex2i(x-35,y+80);
+	glVertex2i(x+width+35,y+80);
+	glVertex2f(x+(width/2),y+height+50);
+	glEnd();
+	glColor3ub(139,69,19);
+	glBegin(GL_POLYGON);
+	
+	glVertex2i(x,y);
+	glVertex2i(x+width,y);
+	glVertex2i(x+width,y+40);
+	glVertex2i(x,y+40);
+	glEnd();
+
+
+
+}
+
+void beach(){
+	//beach
+	glColor3f(1,0.894118,0.709804);
+	glBegin(GL_POLYGON);
+
+	  //top half
+	glVertex2f(450.0,350.0);
+	glVertex2f(540.0,350.0);
+
+	glVertex2f(540.0,350.0);
+	glVertex2f(530.0,240.0);
+
+	glVertex2f(530.0,240.0);
+	glVertex2f(435.0,200.0);
+
+	glEnd();
+
+	glColor3f(1,0.894118,0.709804);
+	glBegin(GL_POLYGON);
+
+		//bottom half
+	glVertex2f(428.0,180.0);
+	glVertex2f(380.0,80);
+
+	glVertex2f(510.0,80.0);
+	glVertex2f(522.0,210.0);
+	
+
+	glEnd();
+
+
+	//beach crossed into bed
+	glColor3f(0.255, 0.239,0.213);
+	glBegin(GL_LINES);
+	glVertex2f(425.0,57.0);
+	glVertex2f(315.0,15.0);
+	glEnd();
+
+}
+void mountain(){
+
+	glColor3f(0,1,0);
+	glBegin(GL_LINES);
+	glVertex2f(530.0,350.0);
+	glVertex2f(1280.0,350.0);
+	glVertex2f(530.0,0.0);
+	glVertex2f(1280.0,0.0);
+	glVertex2f(1280.0,350.0);
+	glVertex2f(1280.0,0.0);
+
+	glEnd();
+
+	glColor3f(0.870588,0.721569,0.529412);
+	glBegin(GL_POLYGON);
+	glVertex2f(580.0,350.0);
+	glVertex2f(700.0,600.0);
+
+	glVertex2f(700.0,600.0);
+	glVertex2f(820.0,350.0);
+	glVertex2f(580.0,350.0);
+
+	glEnd();
+
+	glColor3f(0.870588,0.721569,0.529412);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(820.0,350.0);
+	glVertex2f(920.0,580.0);
+
+	glVertex2f(920.0,580.0);
+	glVertex2f(1000.0,350.0);
+	glVertex2f(820.0,350.0);
+	glEnd();
+
+	glColor3f(0.870588,0.721569,0.529412);
+	glBegin(GL_POLYGON);
+
+	glVertex2f(995.0,360.0);
+	glVertex2f(1100.0,590.0);
+
+	glVertex2f(1100.0,590.0);
+	glVertex2f(1250.0,350.0);
+	glVertex2f(995.0,350.0);
+
+
+	glEnd();
+
+}
+void canal(){
+	/*--------canal passing towards sea..........*/
+	glColor3f(0,1,0);
+	glBegin(GL_LINES);
+	glVertex2f(630.0,350.0);
+	glVertex2f(630.0,280.0);
+	
+	glVertex2f(670.0,350.0);
+	glVertex2f(670.0,260.0);
+
+	glVertex2f(630.0,280.0);
+	glVertex2f(435.0,200.0);
+
+	glVertex2f(670.0,260.0);
+	glVertex2f(429.0,180.0);
+	glEnd();
+
+	/*--------------canal passing to lake-----------*/
+	glColor3f(0,1,0);
+	glBegin(GL_LINES);
+	glVertex2f(1000.0,350.0);
+	glVertex2f(1000.0,280.0);
+
+	glVertex2f(1050.0,350.0);
+	glVertex2f(1050.0,260.0);
+
+	glVertex2f(1000.0,280.0);
+	glVertex2f(700.0,50.0);
+
+	glVertex2f(1050.0,260.0);
+	glVertex2f(750.0,50.0);
+
+	glEnd();
+
+}
+
+void underground(){
+	
+	glColor3f(0.545098, 0.270588 ,0.0745098);
+	glBegin(GL_POLYGON);
+	glVertex2f(1280.0,107.0);
+	glVertex2f(391.0,107.0);
+
+	glVertex2f(391.0,107.0);
+	glVertex2f(315.0,15.0);
+
+	glVertex2f(315.0,15.0);
+	glVertex2f(300.0,0.0);
+	
+	glVertex2f(310.0,0.0);
+	glVertex2f(1280.0,0.0);
+	
+	glEnd();
+
+
+	//underground canal
+	glColor3f(0,0.74902,1);
+	glBegin(GL_POLYGON);
+
+	glVertex2f(315.0,15.0);
+	glVertex2f(800.0,80.0);
+
+	glVertex2f(800.0,77.0);
+	glVertex2f(300.0,7.0);
+
+
+	glEnd();
+
+	//canal passing from tree to underground canal
+	glClearColor(1.0,1.0,1.0,1.0);
+
+	glBegin(GL_POLYGON);
+	glVertex2f(690,107);
+	glVertex2f(640,57);
+
+	glVertex2f(640,57);
+	glVertex2f(650,57);
+
+	glVertex2f(700,107);
+	glVertex2f(650,57);
+
+	glEnd();
+
+
+}
+void grass(){
+	glColor3f(0.196078, 0.803922 ,0.196078);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(540.0,350.0);
+	glVertex2f(530.0,240.0);
+	glVertex2f(630.0,280.0);
+	glVertex2f(630.0,350.0);
+
+	glEnd();
+
+	glColor3f(0.196078, 0.803922 ,0.196078);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(670.0,260.0);
+	glVertex2f(670.0,350.0);
+	glVertex2f(1000.0,350.0);
+	glVertex2f(1000.0,280.0);
+	glVertex2f(775.0,107.0);
+	glVertex2f(510.0,107.0);
+	glVertex2f(522.0,212.0);
+
+	glEnd();
+
+
+	
+
+	glColor3f(0.196078, 0.803922 ,0.196078);
+	glBegin(GL_POLYGON);
+		
+	glVertex2f(1050.0,260.0);
+	glVertex2f(1050.0,350.0);
+	glVertex2f(1280.0,350.0);
+	glVertex2f(1280.0,107.0);
+	glVertex2f(830.0,107.0);
+
+	glEnd();
+
+}
+void lake(){
+	glColor3f(0,0.74902,1);
+	glBegin(GL_POLYGON);
+
+	float r4=90.0;
+	for(i=215;i<=325;i++)
+	{
+
+		float deginrad=i*deg2rad;
+		glVertex2f(cos(deginrad)*r4+800.0,sin(deginrad)*r4+160.0);
+	}
+	glEnd();
+}
+
+
+void sunmove()
+{
+	if(sun_y>530)
+		return;
+	sun_x+=1.0;
+	sun_y+=3.0;
+	bird1_x+=1.0;bird1_y+=10;
+	bird2_x+=1.0;bird2_y+=10;
+	bird3_x+=1.0;bird3_y+=10;
+	frame=2;
+	glFlush();
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	
+	glutPostRedisplay();
+
+}
+void bgcolor_change(float a,float b,float c)
+{
+	glColor3f(a,b,c);
+	glBegin(GL_POLYGON);
+	glVertex2f(0,350);
+	glVertex2f(1280,350);
+	glVertex2f(1280,720);
+	glVertex2f(0,720);
+	glEnd();
+	
+}
+void sunmove_f2()
+{
+	if(sun_y>790)
+		return;
+	sun_x+=1.0;
+	sun_y+=3.0;
+	frame=4;
+	
+	glFlush();
+	
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	
+	glutPostRedisplay();
+
+}
+
+
+void sun(int sun_x,int sun_y){
+	glColor3f(1.0,0.8,0.0);
+	glBegin(GL_POLYGON);
+	float r=50.0;
+	for(i=0;i<=360;i++)
+	{
+
+		float deginrad=i*deg2rad;
+		glVertex2f(cos(deginrad)*r+sun_x,sin(deginrad)*r+sun_y);
+	}
+	glEnd();
+
+	
+}
+void sun_transp(int sun_x,int sun_y){
+	glColor3f(1.0,0.8,0.0);
+	glBegin(GL_POLYGON);
+	float r1=60.0;
+	for(i=0;i<=360;i++)
+	{
+
+		float deginrad=i*deg2rad;
+		glVertex2f(cos(deginrad)*r1+sun_x,sin(deginrad)*r1+sun_y);
+	}
+	glEnd();
+
+	
+}
+
+void sea_beach_inc()
+{
+for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+		
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(440.0,350.0);
+	glVertex2f(380.0,107.0);
+	glVertex2f(450.0,107.0);
+	glVertex2f(470.0,350.0);
+	glVertex2f(440.0,350.0);
+	glEnd();
+	glFlush();
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	glVertex2f(470.0,350.0);
+	glVertex2f(450.0,107.0);
+	glVertex2f(460.0,107.0);
+	glVertex2f(480.0,350.0);
+	glVertex2f(470.0,350.0);
+	glEnd();
+	glFlush();
+}
+void canal_filling()
+{
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	glVertex2f(630.0,350.0);
+	glVertex2f(630.0,280.0);
+	
+	glVertex2f(670.0,280.0);
+	glVertex2f(670.0,350.0);
+	glEnd();
+	glFlush();
+	
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	glVertex2f(1000.0,350.0);
+	glVertex2f(1000.0,280.0);
+	glVertex2f(1050.0,280.0);
+	glVertex2f(1050.0,350.0);
+
+
+	glEnd();
+	glFlush();
+	
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	glVertex2f(630.0,280.0);
+	glVertex2f(670.0,280.0);
+	glVertex2f(670.0,260.0);
+	
+	glVertex2f(522.0,212.0);
+	glVertex2f(530.0,240.0);
+	glVertex2f(630.0,280.0);
+	glEnd();
+	glFlush();
+
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(1000.0,280.0);
+	glVertex2f(1050.0,280.0);
+	
+	glVertex2f(870.0,180.0);
+	glVertex2f(935.0,180.0);
+	glVertex2f(1050.0,260.0);
+	glVertex2f(1050.0,280.0);
+
+
+	glEnd();
+	glFlush();
+	
+	
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	glVertex2f(522.0,212.0);
+	glVertex2f(530.0,240.0);
+	
+	glVertex2f(428.0,180.0);
+	glVertex2f(435.0,200.0);
+	glVertex2f(530.0,240.0);
+	glEnd();
+	glFlush();
+	
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(870.0,180.0);
+	glVertex2f(935.0,180.0);
+	glVertex2f(830.0,107.0);
+	glVertex2f(775.0,107.0);
+	glVertex2f(870.0,180.0);
+	glEnd();
+	glFlush();
+	
+
+	sea_beach_inc();
+	
+}
+
+void rain()
+{
+	GLint x=600.0,y=500.0,i=10;
+	GLint x1=840,y1=500,j=10;
+	glColor3f(0.0,0.0,1.2);
+	glPointSize(3.5);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x,y);
+	glVertex2f(x-i,y-20);
+	glVertex2f(x+40,y);
+	glVertex2f(x+40-i,y-20);
+	glVertex2f(x+80,y);
+	glVertex2f(x+80-i,y-20);
+	glVertex2f(x+120,y);
+	glVertex2f(x+120-i,y-20);
+	glEnd();
+	glFlush();
+	
+	y-=50;
+	glColor3f(0.0,0.0,1.2);
+	glPointSize(3.5);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x1-j,y1-20);
+	glVertex2f(x1+40,y1);
+	glVertex2f(x1+40-j,y1-20);
+	glVertex2f(x1+80,y1);
+	glVertex2f(x1+80-j,y1-20);
+	glVertex2f(x1+120,y1);
+	glVertex2f(x1+120-j,y1-20);
+	glEnd();
+	glFlush();
+
+	y1-=50;
+
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x,y);
+	glVertex2f(x-i,y-20);
+	glVertex2f(x+40,y);
+	glVertex2f(x+40-i,y-20);
+	glVertex2f(x+80,y);
+	glVertex2f(x+80-i,y-20);
+	glVertex2f(x+120,y);
+	glVertex2f(x+120-i,y-20);
+	glEnd();
+	glFlush();
+	y-=50;
+	
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x1-j,y1-20);
+	glVertex2f(x1+40,y1);
+	glVertex2f(x1+40-j,y1-20);
+	glVertex2f(x1+80,y1);
+	glVertex2f(x1+80-j,y1-20);
+	glVertex2f(x1+120,y1);
+	glVertex2f(x1+120-j,y1-20);
+	glEnd();
+	glFlush();
+	
+	y1-=50;
+	
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+		glBegin(GL_LINES);
+	glVertex2f(x,y);
+	glVertex2f(x-i,y-20);
+	glVertex2f(x+40,y);
+	glVertex2f(x+40-i,y-20);
+	glVertex2f(x+80,y);
+	glVertex2f(x+80-i,y-20);
+	glVertex2f(x+120,y);
+	glVertex2f(x+120-i,y-20);
+	glEnd();
+	glFlush();
+	
+	y-=50;
+	glColor3f(0.0,0.0,1.2);
+	glPointSize(3.5);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x1-j,y1-20);
+	glVertex2f(x1+40,y1);
+	glVertex2f(x1+40-j,y1-20);
+	glVertex2f(x1+80,y1);
+	glVertex2f(x1+80-j,y1-20);
+	glVertex2f(x1+120,y1);
+	glVertex2f(x1+120-j,y1-20);
+	glEnd();
+	glFlush();
+
+	y1-=50;
+
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+
+		glBegin(GL_LINES);
+	glVertex2f(x,y);
+	glVertex2f(x-i,y-20);
+	glVertex2f(x+40,y);
+	glVertex2f(x+40-i,y-20);
+	glVertex2f(x+80,y);
+	glVertex2f(x+80-i,y-20);
+	glVertex2f(x+120,y);
+	glVertex2f(x+120-i,y-20);
+	glEnd();
+	glFlush();
+	
+	y-=50;
+	glColor3f(0.0,0.0,1.2);
+	glPointSize(3.5);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x1-j,y1-20);
+	glVertex2f(x1+40,y1);
+	glVertex2f(x1+40-j,y1-20);
+	glVertex2f(x1+80,y1);
+	glVertex2f(x1+80-j,y1-20);
+	glVertex2f(x1+120,y1);
+	glVertex2f(x1+120-j,y1-20);
+	glEnd();
+	glFlush();
+
+	y1-=50;
+
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+
+	
+}
+
+void cloudmove()
+{	
+	
+	
+	if(cloud_x>600)
+		return;
+	cloud_x+=3;
+	
+	cloud_x1+=3;
+	glFlush();
+	frame=4;
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	glutPostRedisplay();
+	
+
+	
+}
+
+void tinydrops(GLfloat x,GLfloat y,GLdouble r)
+{
+	glPointSize(2.0);
+	glColor3f(0.0,0.0,1.2);
+	glBegin(GL_POLYGON);
+	for(i=180;i<=360;i++)
+	{
+
+		float deginrad=i*deg2rad;
+		glVertex2f(cos(deginrad)*r+x,sin(deginrad)*r+y);
+	}
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex2f(x-10,y);
+	glVertex2f(x+4,y+10);
+	glVertex2f(x+4,y+10);
+	glVertex2f(x+10,y);
+	
+	glEnd();
+	
+	glFlush();
+
+}
+
+void raindrop(GLfloat x, GLfloat y, GLdouble r4)
+{
+	//float x2, y2;
+	//float angle;
+	glPointSize(2.0);
+	glColor3f(0.0,0.0,1.2);
+	glBegin(GL_POLYGON);
+	for(i=180;i<=360;i++)
+	{
+
+		float deginrad=i*deg2rad;
+		glVertex2f(cos(deginrad)*r4+x,sin(deginrad)*r4+y);
+	}
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex2f(x-80,y);
+	glVertex2f(x+20,y+90);
+	glVertex2f(x+20,y+90);
+	glVertex2f(x+80,y);
+	glEnd();
+
+	glFlush();
+	
+}
+
+void drpmovement(GLfloat x,GLfloat y)
+{
+	x-=100;
+	while(x>300)
+	{	
+		for(int d=0;d<100000000;d++);
+			
+		raindrop(x,y,80.0);
+		x-=100;
+	}
+}
+
+void bigdroplets(int x, int y,int r)
+{
+
+	glPointSize(2.0);
+	glColor3f(0.0,0.0,1.2);
+	glBegin(GL_POLYGON);
+	for(i=180;i<=360;i++)
+	{
+
+		float deginrad=i*deg2rad;
+		glVertex2f(cos(deginrad)*r+x,sin(deginrad)*r+y);
+	}
+	glEnd();
+	glBegin(GL_POLYGON);
+	glVertex2f(x-60,y);
+	glVertex2f(x+4,y+90);
+	glVertex2f(x+4,y+90);
+	glVertex2f(x+60,y);
+	
+	glEnd();
+	
+	glFlush();
+
+}
+
+
+
+
+void cloudcondensation(int x,int y,int r,int i) // for display 1(condesation)
+{	
+	glColor3f( 0.901961,0.901961,0.980392);
+	circle(x+i,y,r);
+	circle(x+i,y,r);
+	circle(x+100+i,y+300,r-100);
+	circle(x+550+i,y+200,r+100);
+	circle(x+1000+i,y+250,r-50);
+	circle(x+900+i,y,r+100);
+	circle(x+1200+i,y+150,r-100);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(rx1,ry1,10);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(rx2,ry2,10);
+    for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(300,350,10);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(900,200,10);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(400,200,10);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1200,500,10);
+	
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1300,300,10);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1500,500,10);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1600,600,10);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1400,400,10);
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1600,600,10);
+	
+	
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(500,300,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(200,50,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(400,250,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(250,400,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1100,550,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(800,400,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1150,150,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1050,200,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(750,300,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(400,340,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1000,300,10);
+
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1010,800,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1020,300,10);
+
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(2000,500,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1200,300,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1230,300,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1240,360,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1400,400,10);
+
+
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+		tinydrops(1030,400,10);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	tinydrops(1090,600,10);
+
+//-------------------- big drops--------------------------------//
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(300,350,60);
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(1010,800,60);
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(1020,300,60);
+
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(1230,300,60);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(1240,360,60);
+	for(cl=0;cl<999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(1400,400,60);
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(200,50,60);
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(400,250,60);
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(250,400,60);
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(1100,550,60);
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(800,400,60);
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(1150,150,60);
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	bigdroplets(1050,200,60);
+	
+	
+//---------------------change in cloud color-------------------------------------------//
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glColor3f(0.75,0.75,0.75);
+	circle(x+i,y,r);
+	circle(x+i,y,r);
+	circle(x+100+i,y+300,r-100);
+	circle(x+550+i,y+200,r+100);
+	circle(x+1000+i,y+250,r-50);
+	circle(x+900+i,y,r+100);
+	circle(x+1200+i,y+150,r-100);
+	
+
+}
+
+void condensation()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor( 0.901961,0.901961,0.980392,0.0);
+	cloudcondensation(200,200,300,60);
+	
+	//raindrop(drop_x,drop_y,80.0);
+	//raindrop(drop_x1,drop_y1,80.0);
+	char message[]={"As water (in the form of gas) rises higher in the atmosphere, it starts to cool and become a liquid again "};
+	drawText(30,690,1,0,0,message);
+	char message1[]={"this process is called condensation. When large amount of water vapour condenses,it results in the formation of clouds"};
+	drawText(30,660,1,0,0,message1);
+	//drpmovement(drop_x,drop_y);	
+	glClearColor(1.0,1.0,1.0,1.0);
+
+}
+void drawVapour(float vapourX,float vapourY)
+{
+	glColor3f( 1,0,0);
+	glPointSize(4.0);
+	float r=30.0;
+	
+	for(i=330;i<=360;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);
+		glVertex2i(vapourX+cos(deginrad)*r,sin(deginrad)*r+400);	//1st wave
+		for(k=0;k<99;k+=1)
+				for(l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();
+				
+	}
+	for(k=0;k<999;k+=1)
+		for(l=0;l<999;l+=1);	
+		
+	for(i=0;i<=30;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);
+			glVertex2i(vapourX+cos(deginrad)*r,sin(deginrad)*r+400);	//1st wave
+			for(k=0;k<99;k+=1)
+				for(l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();
+	}
+
+	for(k=0;k<999;k+=1)
+		for(long l=0;l<999;l+=1);	
+	
+
+	for(i=150;i<=210;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);
+		glVertex2f(vapourX+51+cos(deginrad)*r,sin(deginrad)*r+400+30.0);	//2nd wave
+			for(k=0;k<99;k+=1)
+				for(l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();
+	}
+	for(k=0;k<999;k+=1)
+		for(l=0;l<999;l+=1);	
+
+	for(i=330;i<=360;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);
+			glVertex2f(vapourX+cos(deginrad)*r,sin(deginrad)*r+400+60.0);	//3rd wave
+			for(k=0;k<99;k+=1)
+				for( l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();	
+	}
+	for(k=0;k<999;k+=1)
+		for(l=0;l<999;l+=1);	
+
+	for(i=0;i<=30;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);		
+			glVertex2i(vapourX+cos(deginrad)*r,sin(deginrad)*r+400+60.0);	//3rd wave
+			for(k=0;k<99;k+=1)
+				for(l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();
+	}
+	for(k=0;k<999;k+=1)
+		for(l=0;l<999;l+=1);	
+
+	for(i=150;i<=210;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);		
+			glVertex2f(vapourX+51+cos(deginrad)*r,sin(deginrad)*r+400+90.0);	//4th wave
+			for(k=0;k<99;k+=1)
+				for(l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();
+	}
+	glColor3f(1.0,0.0,0.0);
+	glPointSize(10.5);
+	glBegin(GL_LINES);
+		glVertex2f(vapourX+25,505);
+		glVertex2f(vapourX,505-30);
+		
+		glVertex2f(vapourX+25,505);
+		glVertex2f(vapourX+50,505-30);
+		
+	glEnd();
+	glFlush();	
+}
+
+void seaDecrease()
+{
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	glColor3f(1,0.894118,0.709804);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(470.0,350.0);
+	glVertex2f(450.0,107.0);
+	glVertex2f(460.0,107.0);
+	glVertex2f(480.0,350.0);
+	glVertex2f(470.0,350.0);
+	glEnd();
+	glFlush();
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	glColor3f(1,0.894118,0.709804);
+	glBegin(GL_POLYGON);
+	
+	glVertex2f(440.0,350.0);
+	glVertex2f(400.0,107.0);
+	glVertex2f(450.0,107.0);
+	glVertex2f(470.0,350.0);
+	glVertex2f(440.0,350.0);
+	glEnd();
+	glFlush();
+}
+
+void evap(){
+	drawVapour(100,400);			//100,400
+	drawVapour(200,400);			//200,400
+	seaDecrease();
+	drawVapour(300,400);
+	drawVapour(400,400);
+}
+void polygon(int x,int y,int width,int height)
+{
+	glBegin(GL_POLYGON);
+	glVertex2i(x,y);
+	glVertex2i(x+width,y);
+	glVertex2i(x+width,y+height);
+	glVertex2i(x,y+height);
+	glEnd();
+}
+void bird(int x,int y)
+{
+	glColor3f(0.0,0.0,0.0);
+	glBegin(GL_TRIANGLES);
+		glVertex2f(x+5,y+30);
+		glVertex2f(x+3,y+10);
+		glVertex2f(x+7,y+10);
+	glEnd();
+	glColor3f(0.8,0.5,0.0);
+	glBegin(GL_POLYGON);
+		glVertex2f(x,y+30);
+		glVertex2f(x+3,y+30);
+		glVertex2f(x+5,y+10);
+		glVertex2f(x+3,y+10);
+	glEnd();
+	glColor3f(0.8,0.5,0.0);
+	glBegin(GL_POLYGON);
+		glVertex2f(x+7,y+30);
+		glVertex2f(x+10,y+30);
+		glVertex2f(x+7,y+10);
+		glVertex2f(x+5,y+10);
+	glEnd();
+	glColor3f(0.8,0.5,0.0);
+	glBegin(GL_TRIANGLES);
+		glVertex2f(x-20,y+26);
+		glVertex2f(x,y+40);
+		glVertex2f(x+3,y+30);
+	glEnd();
+	glColor3f(0.8,0.5,0.0);
+	glBegin(GL_TRIANGLES);
+		glVertex2f(x+7,y+30);
+		glVertex2f(x+10,y+40);
+		glVertex2f(x+30,y+26);
+	glEnd();
+	glColor3f(0.0,0.0,0.0);
+	glBegin(GL_POLYGON);
+		glVertex2f(x+3,y+10);
+		glVertex2f(x+7,y+10);
+		glVertex2f(x+10,y);
+		glVertex2f(x,y);
+	glEnd();
+
+}
+
+void homePage()
+{
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glColor3f(1,1,1);
+	polygon(0,0,800,650);
+	glColor3f(1,0,0);
+	polygon(80,0,1,650);
+	polygon(82,0,1,650);
+	polygon(0,550,1280,1);
+	polygon(0,552,1280,1);
+	glColor3f(0,0,1);
+	j=50;
+	for(i=0;i<20;i++)
+	{
+		polygon(0,j,1280,1);
+		j+=25;
+	}
+	glColor3f(0.5,0,0);
+	DrawTextXY(300,600,0,0.3,"WATER CYCLE");
+	DrawTextXY(301,600,0,0.3,"WATER CYCLE");
+	DrawTextXY(302,600,0,0.3,"WATER CYCLE");
+	DrawTextXY(200,570,0,0.2,"Simulated Using Computer Graphics");
+
+	drawText(85,255,0,0,0,"Submitted By:");
+	drawText1(85,227,0,0,0,"NAWAZULLA SHARIFF (1DS13CS060)");
+	drawText1(85,202,0,0,0,"A NOWMAN TABREZ (1DS13CS068)");
+	drawText1(85,177,0,0,0,"PATIL RAJENDRA PRASAD (1DS13CS069)");
+
+	drawText1(83,77,0,0,0,"Press 1, 2 , 3 , 4 , 5 ");
+	//drawText1(83,);
+	drawText1(83,53,0,0,0,"Press q to exit"); 
+}
+
+void run_off()
+{	
+	glColor3f(0,0.74902,1);
+	glBegin(GL_POLYGON);
+		glVertex2f(1280,120.0);
+		glVertex2f(700.0,120.0);
+		glVertex2f(700.0,100.0);
+		glVertex2f(1280,100.0);
+		
+	glEnd();
+	
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glFlush();
+
+	glColor3f(0,0.74902,1);
+	glBegin(GL_POLYGON);
+		glVertex2f(700,120.0);
+		glVertex2f(525.0,120.0);
+		glVertex2f(525,100.0);
+		glVertex2f(700.0,100.0);
+		
+	glEnd();
+	
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glFlush();
+
+
+
+	glColor3f(0,0.74902,1);
+	glBegin(GL_POLYGON);
+		glVertex2f(475,120.0);
+		glVertex2f(200.0,120.0);
+		glVertex2f(200,100.0);
+		glVertex2f(475.0,100.0);
+		
+	glEnd();
+	
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glFlush();
+
+	glColor3f(0,0.74902,1);
+	glBegin(GL_POLYGON);
+		glVertex2f(200,120.0);
+		glVertex2f(0.0,120.0);
+		glVertex2f(0,100.0);
+		glVertex2f(200.0,100.0);
+		
+	glEnd();
+	
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glFlush();
+
+	
+	
+
+}
+void rain_transp()
+{
+
+	GLint x=850.0,y=450.0,i=10;
+	GLint x1=180,y1=450,j=10;
+	glColor3f(0.0,0.0,1.2);
+	glPointSize(3.5);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x,y);
+	glVertex2f(x-i,y-20);
+	glVertex2f(x+40,y);
+	glVertex2f(x+40-i,y-20);
+	glVertex2f(x+80,y);
+	glVertex2f(x+80-i,y-20);
+	glVertex2f(x+120,y);
+	glVertex2f(x+120-i,y-20);
+	glEnd();
+	glFlush();
+	
+	y-=50;
+	glColor3f(0.0,0.0,1.2);
+	glPointSize(3.5);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x1-j,y1-20);
+	glVertex2f(x1+40,y1);
+	glVertex2f(x1+40-j,y1-20);
+	glVertex2f(x1+80,y1);
+	glVertex2f(x1+80-j,y1-20);
+	glVertex2f(x1+120,y1);
+	glVertex2f(x1+120-j,y1-20);
+	glEnd();
+	glFlush();
+
+	y1-=50;
+
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x,y);
+	glVertex2f(x-i,y-20);
+	glVertex2f(x+40,y);
+	glVertex2f(x+40-i,y-20);
+	glVertex2f(x+80,y);
+	glVertex2f(x+80-i,y-20);
+	glVertex2f(x+120,y);
+	glVertex2f(x+120-i,y-20);
+	glEnd();
+	glFlush();
+	y-=50;
+	
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+
+	glColor3f(0.0,0.0,1.2);
+	glPointSize(3.5);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x1-j,y1-20);
+	glVertex2f(x1+40,y1);
+	glVertex2f(x1+40-j,y1-20);
+	glVertex2f(x1+80,y1);
+	glVertex2f(x1+80-j,y1-20);
+	glVertex2f(x1+120,y1);
+	glVertex2f(x1+120-j,y1-20);
+	glEnd();
+	glFlush();
+
+	y1-=50;
+
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+		glBegin(GL_LINES);
+	glVertex2f(x,y);
+	glVertex2f(x-i,y-20);
+	glVertex2f(x+40,y);
+	glVertex2f(x+40-i,y-20);
+	glVertex2f(x+80,y);
+	glVertex2f(x+80-i,y-20);
+	glVertex2f(x+120,y);
+	glVertex2f(x+120-i,y-20);
+	glEnd();
+	glFlush();
+	
+	y-=50;
+	
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glColor3f(0.0,0.0,1.2);
+	glPointSize(3.5);
+	
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x1-j,y1-20);
+	glVertex2f(x1+40,y1);
+	glVertex2f(x1+40-j,y1-20);
+	glVertex2f(x1+80,y1);
+	glVertex2f(x1+80-j,y1-20);
+	glVertex2f(x1+120,y1);
+	glVertex2f(x1+120-j,y1-20);
+	glEnd();
+	glFlush();
+
+	y1-=50;
+
+
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+
+	run_off();
+
+}
+void changecloud_transp()
+{
+	cloud(cloud_xt-10,cloud_yt-50,100,5);
+	cloud(cloud_xt-700,cloud_yt-50,100,5);
+	rain_transp();
+
+}
+void sunmove_transp()
+{
+	
+	if(sun_y1>900)
+   {	
+		cframe=6;
+		changecloud_transp();
+		return;
+   }
+	sun_x1+=2.0;
+	sun_y1+=5.0;
+	frame=6;
+	for(cl=0;cl<9999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glFlush();
+
+	glutPostRedisplay();
+	
+	
+	
+
+}
+
+void circle_tree(GLfloat x, GLfloat y, GLdouble radius)
+{
+	float x2, y2;
+	float angle;
+	glPointSize(2.0);
+	glColor3f(0.196078, 0.803922, 0.196078);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(x,y);
+	for (angle = 1.0; angle < 361.0f; angle += 0.2)
+	{
+		x2 = x + sin(angle)*radius;
+		y2 = y + cos(angle)*radius;
+		glVertex2f(x2, y2);
+	}
+	glEnd();
+}
+
+void drawVapour_transp(float vapourX,float vapourY)
+{
+	glColor3f(  0 ,0.74902, 1);
+	glPointSize(4.0);
+	float r=30.0;
+	for(k=0;k<999;k+=1)
+		for(l=0;l<999;l+=1);	
+
+	for(i=330;i<=360;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);
+			glVertex2f(vapourX+cos(deginrad)*r,sin(deginrad)*r+400+60.0);	//3rd wave
+			for(k=0;k<99;k+=1)
+				for( l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();	
+	}
+	for(k=0;k<999;k+=1)
+		for(l=0;l<999;l+=1);	
+
+	for(i=0;i<=30;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);		
+			glVertex2i(vapourX+cos(deginrad)*r,sin(deginrad)*r+400+60.0);	//3rd wave
+			for(k=0;k<99;k+=1)
+				for(l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();
+	}
+	for(k=0;k<999;k+=1)
+		for(l=0;l<999;l+=1);	
+
+	for(i=150;i<=210;i++)
+	{
+		float deginrad=i*deg2rad;
+		glBegin(GL_POINTS);		
+			glVertex2f(vapourX+51+cos(deginrad)*r,sin(deginrad)*r+400+90.0);	//4th wave
+			for(k=0;k<99;k+=1)
+				for(l=0;l<999;l+=1);		
+		glEnd();
+		glFlush();
+	}
+	glColor3f(  0 ,0.74902, 1);
+	glPointSize(10.5);
+	glBegin(GL_LINES);
+		glVertex2f(vapourX+25,505);
+		glVertex2f(vapourX,505-30);
+		
+		glVertex2f(vapourX+25,505);
+		glVertex2f(vapourX+50,505-30);
+		
+	glEnd();
+	glFlush();	
+	
+	for(k=0;k<9999;k+=1)
+		for(l=0;l<9999;l+=1);
+	glutPostRedisplay();
+
+}
+void water_trunk()
+{
+	glColor3f(0.117647, 0.564706 ,1);
+	for(i=0;i<150;i+=30){
+	glBegin(GL_LINES);
+	glVertex2f(490,110+i);
+	glVertex2f(490,140+i);
+	glEnd();
+	glFlush();
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	glBegin(GL_LINES);
+	glVertex2f(510,120+i);
+	glVertex2f(510,160+i);
+	glEnd();
+	glFlush();
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+	
+	
+	}
+}
+void evap_transp(){
+	water_trunk();			
+	drawVapour_transp(400,750);			
+	drawVapour_transp(500,750);			
+	drawVapour_transp(600,750);			
+	drawVapour_transp(700,750);	
+	glutPostRedisplay();
+
+}
+void drawTree1()
+{
+	circle_tree(400.0,300.0,80.0);	//bottom left
+	circle_tree(600.0,300.0,80.0);	//bottom right
+	circle_tree(500.0,275.0,60.0);	//bottom middle
+	circle_tree(445.0,390.0,80.0);	//mid left
+	circle_tree(555.0,390.0,80.0);	//mid right
+	circle_tree(500.0,475.0,80.0);	//top
+	//glFlush();
+
+	glColor3f( 0.823529, 0.411765 ,0.117647);
+	glBegin(GL_POLYGON);
+		glVertex2f(475.0,100.0);
+		glVertex2f(525.0,100.0);
+		glVertex2f(525.0,225.0);
+		glVertex2f(475.0,225.0);
+	glEnd();
+	
+}
+
+void underground_transp()
+{
+	glColor3f(0.545098, 0.270588 ,0.0745098);
+	glBegin(GL_POLYGON);
+		glVertex2f(0.0,0.0);
+		glVertex2f(0.0,100.0);
+		glVertex2f(1280.0,100.0);
+		glVertex2f(1280.0,0.0);
+		
+	glEnd();
+
+
+}
+void under_water_transp()
+{
+	glColor3f( 0,0.74902,1);
+	glBegin(GL_POLYGON);
+	glVertex2f(480,100);
+	glVertex2f(100,0);
+	glVertex2f(165,0);
+	glVertex2f(510,100);
+	glEnd();
+
+}
+
+
+void display5()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	frame=6;
+	drawTree1();
+	underground_transp();
+	under_water_transp();
+	sun_transp(sun_x1,sun_y1);
+	cloud(cloud_xt,cloud_yt,50,5);
+	glFlush();
+	
+	if(after_vapour)
+		sunmove_transp();
+	glFlush();
+
+}
+
+
+void display4(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(1,1,1, 1);
+	frame=5;
+	bgcolor_change(bg_x,bg_y,bg_z);
+	
+	
+	sea();
+	beach();
+	mountain();
+	canal();
+	underground();
+	grass();
+	treetop(670,107,40,75);
+	treetop(1100,107,40,75);
+	lake();
+	cloud(cloud_xd3,cloud_yd3,60,10);
+	cloud(cloud_x1d3,cloud_y1d3,60,10);
+	/*
+	if(bg_count<5)
+	{
+	if(bg_count==0)
+	bg_x=bg_colors[0][0];bg_y=bg_colors[0][1];bg_z=bg_colors[0][2];
+	
+	if(bg_count==1)
+	bg_x=bg_colors[1][0];bg_y=bg_colors[1][1];bg_z=bg_colors[1][2];
+	
+	if(bg_count==2)
+	bg_x=bg_colors[2][0];bg_y=bg_colors[2][1];bg_z=bg_colors[2][2];
+	
+	if(bg_count==3)
+	bg_x=bg_colors[3][0];bg_y=bg_colors[3][1];bg_z=bg_colors[3][2];
+	
+	if(bg_count==4)
+	bg_x=bg_colors[4][0];bg_y=bg_colors[4][1];bg_z=bg_colors[4][2];
+	
+	
+	
+	
+	for(cl=0;cl<99999;cl++)
+	for(ck=0;ck<5000;ck++);
+
+	glutPostRedisplay();
+	}
+	
+	bg_count++;
+
+	*/
+	rain();
+	
+	canal_filling();
+	glFlush();
+	
+	
+
+	//glFlush();
+}
+
+void display3()
+{
+	
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(1.0,1.0,1.0,1.0);
+	frame=4;
+	
+	sea();	
+	
+	
+	sun(sun_x,sun_y);
+	beach();
+	
+	mountain();
+	canal();
+	underground();
+	grass();
+	treetop(670,107,40,75);
+	treetop(1100,107,40,75);
+	lake();
+	cloud(cloud_x,cloud_y,60,10);
+	cloud(cloud_x1,cloud_y1,60,10);
+	
+	sunmove_f2();
+	
+	cloudmove();
+	glFlush();	
+}
+void display1(void)
+{
+	
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(1.0,1.0,1.0,1.0);
+	frame=2;
+	sun(sun_x,sun_y);
+	bird(bird1_x,bird1_y);
+	bird(bird2_x,bird2_y);
+	bird(bird3_x,bird3_y);
+	beach();
+	sea();
+	mountain();
+	canal();
+	underground();
+	grass();
+	treetop(670,107,40,75);
+	treetop(1100,107,40,75);
+	lake();
+	
+	if(frame==2)	
+	{
+		sunmove();
+
+	}
+	glFlush();
+}
+void display2()
+{
+	
+	glClear(GL_COLOR_BUFFER_BIT);
+	frame=3;
+	condensation();
+		
+	glFlush();
+
+}
+
+void display()
+{
+	
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	
+	if(frame==2)
+	{	
+		display1();
+		return;
+	}
+	if(frame==3)
+	{
+		display2();
+		return;
+	}
+	if(frame==4)
+	{
+		display3();
+		return;
+	}
+	if(frame==5)
+	{
+		display4();
+		return;
+	}
+	if(frame==6)
+	{
+		display5();
+		return;
+	}
+	
+	homePage();
+
+	glFlush();
+}
+
+void keyboard(unsigned char key,int x,int y)
+{
+	switch(key)
+	{
+	
+	
+	
+	case 'v':evap();
+			  break;
+
+	case 't':evap_transp();
+			after_vapour=1;
+			break;
+
+
+	case '1':seaFrame=1;
+			display1();
+			 
+				break;
+	case '2':display2();
+			 
+			 break;
+
+	case '3':display3();
+			sun_x=120;
+			sun_y=530;
+			frame=4;
+			seaFrame=2; 
+			break;
+
+	case '4':display4();
+			break;
+	case '5':	display5();
+				break;
+
+	
+	default : exit(0);
+	}
+}
+
+
+
+void menu(int value)
+{
+	 switch(value)
+	 {
+     case 1:display1();	     
+		   break;
+     case 2:display2();
+		    break;
+	 case 3:display3();
+			break;
+	 case 4:display4();break;
+	 case 5:display5();
+		 break;
+	 default:exit(0);
+	 }
+} 
+
+
+void init()
+{
+	glClearColor(1.0,1.0,1.0,1.0);
+	glColor3f(0.0,0.0,0.0);
+	
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	gluOrtho2D(0,1280,0,720);
+}
+void main(int argc,char** argv)
+{
+	glutInit(&argc,argv);
+	glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
+	glutInitWindowSize(1280,720);
+	glutInitWindowPosition(0,0);
+	glutCreateWindow("simple");
+	glutDisplayFunc(display);
+	glutKeyboardFunc(keyboard);
+	glutCreateMenu(menu);
+	glutAddMenuEntry("Evaporation",1);
+   	glutAddMenuEntry("Condensation", 2);
+	glutAddMenuEntry("Cloud movement", 3);
+	glutAddMenuEntry("Precipitation",4);
+	glutAddMenuEntry("Transpiration",5);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+	init();
+	glutMainLoop();
+}
